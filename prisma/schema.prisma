@@ -8,23 +8,62 @@ datasource db {
 }
 
 model estudiante {
-  primer_nombre      String @db.VarChar(100)
-  primer_apellido    String @db.VarChar(100)
+  primer_nombre      String    @db.VarChar(100)
+  primer_apellido    String    @db.VarChar(100)
   edad               Int
-  pais_origen        String @db.VarChar(50)
-  carrera            String @db.VarChar(100)
-  materias_cursadas  String @db.VarChar(200)
-  es_moroso          String @db.VarChar(50)
+  pais_origen        String    @db.VarChar(50)
+  carrera            String    @db.VarChar(100)
+  materias           materia[]
+  es_moroso          String    @db.VarChar(50)
   deuda_ciclo_actual Int
-  id                 Int    @id @default(autoincrement())
+  id                 Int       @id @default(autoincrement())
+  facultad           facultad  @relation(fields: [facultad_id], references: [id])
+  facultad_id        Int
+  profesor           profesor  @relation(fields: [profesor_id], references: [id])
+  profesor_id        Int
 }
 
+// model estudiantesYmaterias {
+//   estudiante_id Int
+//   materia_id    Int
+//   estudiante    estudiante @relation(fields: [estudiante_id], references: [id])
+//   materia       materia    @relation(fields: [materia_id], references: [id])
+
+//   @@id([estudiante_id, materia_id])
+// }
+
 model materia {
-  id                 Int    @id @default(autoincrement())
-  nombre             String @db.VarChar(200)
-  codigo             String @db.VarChar(10)
-  profesor           String @db.VarChar(200)
-  iniciales_profesor String @db.VarChar(4)
+  id                 Int        @id @default(autoincrement())
+  nombre             String     @db.VarChar(200)
+  codigo             String     @db.VarChar(10)
+  profesor           String     @db.VarChar(200)
+  iniciales_profesor String     @db.VarChar(4)
   creditos           Int
-  carrera            String @db.VarChar(100)
+  carrera            String     @db.VarChar(100)
+  estudiantes        estudiante @relation(fields: [estudiante_id], references: [id])
+  estudiante_id      Int
+  profesors          profesor   @relation(fields: [profesor_id], references: [id])
+  profesor_id        Int
+  facultads          facultad   @relation(fields: [facultad_id], references: [id])
+  facultad_id        Int
+}
+
+model profesor {
+  id          Int          @id @default(autoincrement())
+  nombre      String       @db.VarChar(100)
+  apellido    String       @db.VarChar(100)
+  materias    materia[]
+  facultad    facultad     @relation(fields: [facultad_id], references: [id])
+  facultad_id Int
+  estudiantes estudiante[]
+}
+
+model facultad {
+  id            Int          @id @default(autoincrement())
+  nombre        String       @db.VarChar(100)
+  nombre_decano String       @db.VarChar(100)
+  abreviacion   String       @db.VarChar(100)
+  materias      materia[]
+  estudiantes   estudiante[]
+  profesors     profesor[]
 }
